@@ -1,26 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import html2canvas from 'html2canvas'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
 import { LoadingController, ModalController, Platform } from '@ionic/angular';
 import { BarcodeScanningModalComponent } from './barcode-scanning-modal.component';
 import { LensFacing, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { PersonService } from '../services/person.service';
+import { Router } from '@angular/router';
 
+import { Person } from '../interfaces/persons';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit{
+export class HomePage implements OnInit {
 
   segment = 'scan'
   qrText = ''
-  scanResult=''
+  scanResult = ''
+  private _personService = inject(PersonService)
+  private _router = inject(Router)
 
   constructor(private loadingController: LoadingController,
     private platform: Platform,
-    private modalController: ModalController) { }
+    private modalController: ModalController, private http: HttpClient) { }
 
 
   ngOnInit(): void {
@@ -33,26 +39,32 @@ export class HomePage implements OnInit{
     }
   }
 
-    async startScan() {
-      const modal = await this.modalController.create({
+  async startScan() {
+    const modal = await this.modalController.create({
       component: BarcodeScanningModalComponent,
-      cssClass:'barcode-scanning-modal',
+      cssClass: 'barcode-scanning-modal',
       showBackdrop: false,
-      componentProps: { 
-        formats:[],
+      componentProps: {
+        formats: [],
         lensFacing: LensFacing.Back,
-       }
-      });
-    
-      await modal.present();
-
-      const {data}= await modal.onWillDismiss()
-
-      if(data){
-        this.scanResult = data?.barcode?.displayValue
       }
-    
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss()
+
+    if (data) {
+      this.scanResult = data?.barcode?.displayValue
     }
+
+    const person: Person = {
+      dni: this.scanResult
+    }
+
+    this._personService.getPerson(person).subscribe(
+      data => console.log(data)    )
+  }
 
   // captura html element, convert it to canvas and get an image
   captureScreen() {
