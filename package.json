@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "start": "node dist/qr-visit-app-ionic/server/server.mjs" 
+    "start": "ionic serve" 
     
   },
   "private": true,
