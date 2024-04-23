@@ -31,12 +31,11 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
 
-    if (this.platform.is('capacitor')) {
-      BarcodeScanner.isSupported().then()
-      BarcodeScanner.checkPermissions().then()
-      BarcodeScanner.removeAllListeners()
 
-    }
+    BarcodeScanner.isSupported().then()
+    BarcodeScanner.checkPermissions().then()
+    BarcodeScanner.removeAllListeners()
+   // if (this.platform.is('capacitor')) {      }
   }
 
   async startScan() {
